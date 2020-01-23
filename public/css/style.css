@@ -1,0 +1,25 @@
+.nav-link-color {
+  color: white;
+}
+
+.nav-item-space {
+  margin-right: 15%;
+}
+
+.stretched-link {
+  color: darkgray;
+}
+
+#link-logo {
+  height: 40px;
+  width: 40px;
+}
+
+#nav-serachbar {
+  width: 60%;
+}
+
+.card {
+  margin-top: 10px;
+  width: 18rem;
+}
