@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,21 +11,28 @@
 
   <title>Post</title>
 </head>
+
 <body>
+  <!-- Navbar -->
   <?php include './includes/navbar.html'; ?>
 
-  <div>
+  <div class="container">
     <form action="" method="post">
       <div class="post-container">
-        <img src="./img/default-profile.jpg" alt="profile picture" height="50" width="40" class="img-thumbnail" id="pp-send-post">
-        <textarea name="" id="" cols="45" rows="2" placeholder="Write something..."></textarea><br>
+        <img src="./img/default-profile.jpg" alt="profile picture" height="30" width="30" class="img-thumbnail" id="pp-send-post">
+        <textarea class="form-control" name="post-text" id="post-text" cols="30" rows="2" placeholder="Write something..."></textarea><br>
       </div>
+      <label for="inputFile" class="custom-file-upload">
+        <img src="./img/fileinput-img.logo.svg" alt="logo appareil photo">
+      </label>
       <input type="file" name="inputFile" id="inputFile" accept="image/*" multiple>
       <button type="submit" class="btn btn-secondary btn-light-gray">Boost Post</button>
       <button type="submit" class="btn btn-primary">Publish</button>
     </form>
   </div>
 
+  <!-- Footer -->
   <?php include './includes/footer.html'; ?>
 </body>
+
 </html>
