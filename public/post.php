@@ -13,6 +13,18 @@
 <body>
   <?php include './includes/navbar.html'; ?>
 
+  <div>
+    <form action="" method="post">
+      <div class="post-container">
+        <img src="./img/default-profile.jpg" alt="profile picture" height="50" width="40" class="img-thumbnail" id="pp-send-post">
+        <textarea name="" id="" cols="45" rows="2" placeholder="Write something..."></textarea><br>
+      </div>
+      <input type="file" name="inputFile" id="inputFile" accept="image/*" multiple>
+      <button type="submit" class="btn btn-secondary btn-light-gray">Boost Post</button>
+      <button type="submit" class="btn btn-primary">Publish</button>
+    </form>
+  </div>
+
   <?php include './includes/footer.html'; ?>
 </body>
 </html>

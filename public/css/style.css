@@ -10,6 +10,21 @@
   color: darkgray;
 }
 
+.card {
+  margin-top: 10px;
+  width: 18rem;
+}
+
+.img-thumbnail {
+  border-radius: 50%;
+}
+
+.btn-light-gray {
+  background-color: lightgray;
+  border-color: lightgray;
+  color: rgb(44, 43, 43);
+}
+
 #link-logo {
   height: 40px;
   width: 40px;
@@ -19,7 +34,9 @@
   width: 60%;
 }
 
-.card {
-  margin-top: 10px;
-  width: 18rem;
+.post-container {
+  display:table-cell;
+  vertical-align: middle;
+  height: 100px;
+  width: 75%;
 }
