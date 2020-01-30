@@ -34,11 +34,10 @@
   width: 60%;
 }
 
-.post-container {
-  display:table-cell;
-  vertical-align: middle;
-  height: 100px;
-  width: 75%;
+.post-form-container {
+  width: 25%;
+  margin-left: 35%;
+  margin-top: 10px;
 }
 
 input[type="file"] {
