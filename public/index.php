@@ -13,7 +13,7 @@
 
 <body>
   <!-- Navbar -->
-  <?php include './includes/navbar.html'; ?>
+  <?php include './includes/navbar.inc.html'; ?>
 
   <div class="alert alert-dark alert-dismissible fade show" role="alert">
     Bienvenue
@@ -23,11 +23,11 @@
   </div>
 
   <div class="card">
-  <img src="./img/city-dawn-sky-373893.jpg" class="card-img-top" alt="Img of city">
+  <img src="./img/city-dawn-sky-373893.jpg" class="card-img-top" alt="Img of city" draggable="false">
     <div class="card-body">
     <h5 class="card-title">Portfolio M152</h5>
       <p class="card-text">
-        <img src="./img/default-profile.jpg" alt="profile picture" height="25" width="25">
+        <img src="./img/default-profile.jpg" alt="profile picture" height="25" width="25" draggable="false">
         <small class="text-muted">45 Followers, 13 Posts</small></p>
     </div>
   </div>
@@ -43,7 +43,7 @@
   </div>
 
   <!-- Footer -->
-  <?php include './includes/footer.html'; ?>
+  <?php include './includes/footer.inc.html'; ?>
 </body>
 
 </html>
