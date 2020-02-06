@@ -3,7 +3,7 @@
 /**
  * @author 	dominique.aigroz@edu.ge.ch
  */
-require_once '../../config/conparam.php';
+require_once '../../config/config.inc.php';
 
 /**
  * @brief	Helper class encapsulating

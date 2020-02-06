@@ -1,5 +1,5 @@
 <?php
-require_once('../Controller/DatabaseController.php');
+require_once '../Controller/EDatabaseController.php';
 
 /**
  * @author Hoarau Nicolas
@@ -13,24 +13,36 @@ require_once('../Controller/DatabaseController.php');
  */
 function SendPost($content, $filename = null, $mediaType = null)
 {
-    // Traitement
-    try {
-        EDatabaseController::beginTransaction();
+  $date = date("Y-m-d H:i:s");
 
-        $req = EDatabaseController::prepare("INSERT INTO post(commentaire, creationDate) VALUES (:content, GETDATE());");
+  // Traitement
+  try {
+    $db = EDatabaseController::beginTransaction();
 
-        $req->bindParam(':content', $content, PDO::PARAM_STR);
-        $req->execute();
+    $req = <<<EOT
+        INSERT INTO post(commentaire, creationDate) VALUES (:content, :creationDate);
+        EOT;
 
-        $req = EDatabaseController::prepare("INSERT INTO media(nomMedia, typeMedia, creationDate) VALUES (:nomMedia, :typeMedia, GETDATE())");
+    $query = EDatabaseController::prepare($req);
 
-        $req->bindParam(':nomMedia', $filename, PDO::PARAM_STR);
-        $req->bindParam(':typeMedia', $mediaType, PDO::PARAM_STR);
+    $query->bindParam(':content', $content, PDO::PARAM_STR);
+    $query->bindParam(':creationDate', $date);
+    $query->execute();
 
-        $req->execute();
-        $req->commit();
-    } catch (Exception $e) {
-        $req->rollBack();
-        return $e->getMessage();
-    }
+    $req = <<<EOT
+        INSERT INTO media(nomMedia, typeMedia, creationDate) VALUES (:nomMedia, :typeMedia, :creationDate);
+        EOT;
+
+    $query = EDatabaseController::prepare($req);
+
+    $query->bindParam(':nomMedia', $filename, PDO::PARAM_STR);
+    $query->bindParam(':typeMedia', $mediaType, PDO::PARAM_STR);
+    $query->bindParam(':creationDate', $date);
+
+    $query->execute();
+    EDatabaseController::commit();
+  } catch (Exception $e) {
+    $query->rollBack();
+    return $e->getMessage();
+  }
 }
