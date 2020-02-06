@@ -1,2 +1,2 @@
 <?php
-define('UPLOAD_PATH', '../../public/assets/uploaded/');
+define('UPLOAD_PATH', '../../public/assets/upload/');

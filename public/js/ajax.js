@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready( () => {
     $("#btnSendPosts").click(sendPost);
 
 });
@@ -7,31 +7,32 @@ $(document).ready(function () {
  * Fonction qui permet d'envoyer un post
  */
 function sendPost(event) {
-    formdata = new FormData();
-
     if (event) {
         event.preventDefault();
     }
 
+    let formdata = new FormData();
+
     let content = $("#postText").val();
-    formdata.append("content", content);
+    formdata.append("postText", content);
 
-    let images = $("#inputImg").prop("files");
-    formdata.append("inputImg", images);
+    let ins = document.getElementById('inputImg').files.length;
+    for (let x = 0; x < ins; x++) {
+        formdata.append("inputImg[]", document.getElementById('inputImg').files[x]);
+    }
 
-    /*
-        let videos = $("#inputVideo").prop("files");
-
-        let audio = $("#inputAudio").prop("files");
-*/
     $.ajax({
         type: "post",
         url: "../App/php/sendPosts.php",
+
+        // pour l'upload de fichier
+        contentType: false,
+        processData: false,
+
         data: formdata,
         dataType: "json",
-        success: function (response) {
+        success: (response) => {
             console.log("test");
-            
         }
     });
 }

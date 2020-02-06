@@ -23,11 +23,11 @@
   </div>
 
   <div class="card">
-  <img src="./img/city-dawn-sky-373893.jpg" class="card-img-top" alt="Img of city" draggable="false">
+  <img src="./assets/img/city-dawn-sky-373893.jpg" class="card-img-top" alt="Img of city" draggable="false">
     <div class="card-body">
     <h5 class="card-title">Portfolio M152</h5>
       <p class="card-text">
-        <img src="./img/default-profile.jpg" alt="profile picture" height="25" width="25" draggable="false">
+        <img src="./assets/img/default-profile.jpg" alt="profile picture" height="25" width="25" draggable="false">
         <small class="text-muted">45 Followers, 13 Posts</small></p>
     </div>
   </div>
