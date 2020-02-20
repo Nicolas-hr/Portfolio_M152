@@ -26,7 +26,6 @@ function sendPost(event) {
       formdata.append("inputImg[]", file);
     } else {
       console.log("trop gros");
-      
     }
   }
 
@@ -41,7 +40,7 @@ function sendPost(event) {
     data: formdata,
     dataType: "json",
     success: response => {
-      window.location.href = "./index.php";
+//      window.location.href = "./index.php";
     }
   });
 }
