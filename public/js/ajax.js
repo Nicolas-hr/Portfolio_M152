@@ -70,6 +70,7 @@ function GetPosts() {
     url: "../App/php/getPosts.php",
     dataType: "json",
     success: data => {
+      //console.log(data);
       ShowPosts(data)
     },
   });
@@ -84,5 +85,7 @@ function GetPosts() {
  * @param {array} posts tableau des posts reçu via la fonction GetPost
  */
 function ShowPosts(posts) {
-
+  posts.each((index) => {
+    console.log(index);
+  });
 }
