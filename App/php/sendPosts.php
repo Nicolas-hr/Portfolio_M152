@@ -33,3 +33,10 @@ if (isset($_FILES['inputImg'])) {
   }
 }
 
+if (InsertPost($content)) {
+  echo json_encode([
+    'ReturnCode' => 0,
+    'Success' => "Post send correctly"
+  ]);
+  exit();
+}
