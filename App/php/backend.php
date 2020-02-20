@@ -2,6 +2,8 @@
 require_once dirname(__DIR__).'/Controller/EDatabaseController.php';
 require_once dirname(dirname(__DIR__)).'/public/includes/const.inc.php';
 
+date_default_timezone_set('Europe/Zurich');
+
 /**
  * @author Hoarau Nicolas
  * 
@@ -31,9 +33,10 @@ function InsertPost(string $content, array $file = null) : bool
     $query->bindParam(':creationDate', $date);
     $query->execute();
 
-    $latsInsertId = EdatabaseController::getInstance()->lastInsertId();
-
+    
     if ($file != null) {
+      $latsInsertId = EdatabaseController::getInstance()->lastInsertId();
+
       for ($i = 0; $i < count($file['name']); $i++) {
         $fileExtension = pathinfo($file['name'][$i], PATHINFO_EXTENSION);
         $filename = uniqid() . '.' . $fileExtension;
