@@ -1,3 +1,4 @@
+<?php require_once __DIR__. '/includes/const.inc.php';?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,7 +28,7 @@
     <div class="card-body">
     <h5 class="card-title">Portfolio M152</h5>
       <p class="card-text">
-        <img src="./assets/img/default-profile.jpg" alt="profile picture" height="25" width="25" draggable="false">
+        <img src="<?=PROFILE_PHOTO?>" alt="profile picture" height="25" width="25" draggable="false">
         <small class="text-muted">45 Followers, 13 Posts</small></p>
     </div>
   </div>
@@ -41,6 +42,8 @@
       <p class="card-text"></p>
     </div>
   </div>
+
+  <div id="post"></div>
 
   <!-- Footer -->
   <?php include './includes/footer.inc.html'; ?>

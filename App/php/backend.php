@@ -1,6 +1,6 @@
 <?php
-require_once '../Controller/EDatabaseController.php';
-require_once '../../public/includes/const.inc.php';
+require_once dirname(__DIR__).'/Controller/EDatabaseController.php';
+require_once dirname(dirname(__DIR__)).'/public/includes/const.inc.php';
 
 /**
  * @author Hoarau Nicolas

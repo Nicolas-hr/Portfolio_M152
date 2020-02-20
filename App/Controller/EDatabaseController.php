@@ -4,8 +4,8 @@
 /**
  * @author 	dominique.aigroz@edu.ge.ch
  */
-require_once '../Controller/ExtendedPdo.php';
-require_once '../../config/config.inc.php';
+require_once __DIR__ .'/ExtendedPdo.php';
+require_once dirname(dirname(__DIR__)).'/config/config.inc.php';
 
 /**
  * @brief	Helper class encapsulating
