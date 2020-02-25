@@ -1,4 +1,4 @@
-<?php require_once __DIR__. '/includes/const.inc.php';?>
+<?php require_once __DIR__ . '/includes/const.inc.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,7 +14,7 @@
 
 <body>
   <!-- Navbar -->
-  <?php include './includes/navbar.inc.html'; ?>
+  <?php include __DIR__ . '/includes/navbar.inc.html'; ?>
 
   <div class="alert alert-dark alert-dismissible fade show" role="alert">
     Bienvenue
@@ -23,27 +23,35 @@
     </button>
   </div>
 
-  <div class="card">
-  <img src="./assets/img/city-dawn-sky-373893.jpg" class="card-img-top" alt="Img of city" draggable="false">
-    <div class="card-body">
-    <h5 class="card-title">Portfolio M152</h5>
-      <p class="card-text">
-        <img src="<?=PROFILE_PHOTO?>" alt="profile picture" height="25" width="25" draggable="false">
-        <small class="text-muted">45 Followers, 13 Posts</small></p>
+  <div class="container">
+    <div class="row">
+      <div class="col col-sm-auto">
+        <div class="card">
+          <img src="./assets/img/city-dawn-sky-373893.jpg" class="card-img-top" alt="Img of city" draggable="false">
+          <div class="card-body">
+            <h5 class="card-title">Portfolio M152</h5>
+            <p class="card-text">
+              <img src="<?= PROFILE_PHOTO ?>" alt="profile picture" height="25" width="25" draggable="false">
+              <small class="text-muted">45 Followers, 13 Posts</small></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              Bootstrap Examples
+              <small><a href="#" class="stretched-link">View all</a></small>
+            </h5>
+            <p class="card-text"></p>
+          </div>
+        </div>
+      </div>
+      <div class="col col-lg-2">
+        <div id="posts"></div>
+      </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">
-        Bootstrap Examples
-        <small><a href="#" class="stretched-link">View all</a></small>
-      </h5>
-      <p class="card-text"></p>
-    </div>
-  </div>
-
-  <div id="post"></div>
 
   <!-- Footer -->
   <?php include './includes/footer.inc.html'; ?>

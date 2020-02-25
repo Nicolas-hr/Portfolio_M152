@@ -1,8 +1,11 @@
 const FILESIZE_MAX = 3145728;
+const IMG_PATH = './assets/upload/';
 
 $(document).ready(() => {
-  let pageName = window.location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-  
+  let pageName = window.location.pathname.substring(
+    location.pathname.lastIndexOf("/") + 1
+  );
+
   $("#btnSendPosts").click(sendPost);
 
   if (pageName == "index.php") {
@@ -13,11 +16,11 @@ $(document).ready(() => {
 /**
  * @author Hoarau Nicolas
  * @date 30.01.2020
- * 
+ *
  * @brief Fonction qui permet d'envoyer un post
- * 
+ *
  * @param event
- * 
+ *
  * @version : 1.0.0
  */
 function sendPost(event) {
@@ -61,7 +64,7 @@ function sendPost(event) {
 /**
  * @author Hoarau Nicolas
  * @date 20.02.2020
- * 
+ *
  * @brief Fonction qui récupère les posts dans la base de données via ajax
  */
 function GetPosts() {
@@ -71,21 +74,32 @@ function GetPosts() {
     dataType: "json",
     success: data => {
       //console.log(data);
-      ShowPosts(data)
-    },
+      ShowPosts(data);
+    }
   });
 }
 
 /**
  * @author Hoarau Nicolas
  * @date 20.02.2020
- * 
+ *
  * @brief Fonction qui affiche les posts
- * 
+ *
  * @param {array} posts tableau des posts reçu via la fonction GetPost
  */
 function ShowPosts(posts) {
-  posts.each((index) => {
-    console.log(index);
+  let html = '';
+  $.each(posts, (index, post) => {
+    html += post.comment + "<br>";
+
+    if (post.medias != null) {
+      let medias = post.medias.split(",");
+      console.log(medias);
+
+      for (let i = 0; i < medias.length; i++) {
+        html += '<img src="' + IMG_PATH + medias[i] +'" alt="uploaded image"><br>';
+      }
+    }
+    $("#posts").html(html);
   });
 }
