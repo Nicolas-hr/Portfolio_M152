@@ -3,22 +3,22 @@ require_once getcwd() .'./backend.php';
 
 $content = filter_input(INPUT_POST, "postText", FILTER_SANITIZE_STRING);
 
-if (isset($_FILES['inputImg'])) {
-  $file = $_FILES['inputImg'];
+if (isset($_FILES['medias'])) {
+  $file = $_FILES['medias'];
 
   for ($i = 0; $i < count($file['name']); $i++) {
     $fileType = exif_imagetype($file['tmp_name'][$i]);
-    if (!image_type_to_mime_type($fileType)) {
+    if (!image_type_to_mime_type($fileType) || mime_content_type($file['name']) == 'audio/mpeg' || mime_content_type($file['name']) == 'video/mp4') {
       if ($file['size'][$i] > FILESIZE_MAX) {
         echo json_encode([
          'ReturnCode' => 2,
-         'Success' => "Le fichier est trop gros"
+         'Error' => "Le fichier est trop gros"
        ]);
        exit();
       }
       echo json_encode([
         'ReturnCode' => 3,
-        'Success' => "Ce n'est pas une image"
+        'Error' => "Ce n'est pas une image"
       ]);
       exit();
       }
@@ -32,6 +32,8 @@ if (isset($_FILES['inputImg'])) {
       exit();
   }
 }
+
+
 
 if (InsertPost($content)) {
   echo json_encode([

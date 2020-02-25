@@ -1,5 +1,5 @@
 const FILESIZE_MAX = 3145728;
-const IMG_PATH = './assets/upload/';
+const IMG_PATH = "./assets/upload/";
 
 $(document).ready(() => {
   let pageName = window.location.pathname.substring(
@@ -33,16 +33,24 @@ function sendPost(event) {
   let content = $("#postText").val();
   formdata.append("postText", content);
 
-  let ins = document.getElementById("inputImg").files.length;
-
-  for (let x = 0; x < ins; x++) {
+  for (let x = 0; x < document.getElementById("inputImg").files.length; x++) {
     let file = document.getElementById("inputImg").files[x];
 
     if (file["size"] < FILESIZE_MAX) {
-      formdata.append("inputImg[]", file);
+      formdata.append("medias[]", file);
     } else {
       console.log("trop gros");
     }
+  }
+
+  for (let x = 0; x < document.getElementById("inputAudio").files.length; x++) {
+    let file = document.getElementById("inputAudio").files[x];
+    formdata.append("medias[]", file);
+  }
+
+  for (let x = 0; x < document.getElementById("inputVideo").files.length; x++) {
+    let file = document.getElementById("inputVideo").files[x];
+    formdata.append("medias[]", file);
   }
 
   $.ajax({
@@ -73,7 +81,6 @@ function GetPosts() {
     url: "../App/php/getPosts.php",
     dataType: "json",
     success: data => {
-      //console.log(data);
       ShowPosts(data);
     }
   });
@@ -88,16 +95,21 @@ function GetPosts() {
  * @param {array} posts tableau des posts reçu via la fonction GetPost
  */
 function ShowPosts(posts) {
-  let html = '';
+  let html = "";
   $.each(posts, (index, post) => {
     html += post.comment + "<br>";
 
     if (post.medias != null) {
       let medias = post.medias.split(",");
-      console.log(medias);
-
       for (let i = 0; i < medias.length; i++) {
-        html += '<img id="imgPosts" src="' + IMG_PATH + medias[i] +'" alt="uploaded image"><br>';
+        if (medias[i].type == '') {
+          
+        }
+        html +=
+          '<img id="imgPosts" src="' +
+          IMG_PATH +
+          medias[i] +
+          '" alt="uploaded image"><br>';
       }
     }
     $("#posts").html(html);

@@ -42,7 +42,7 @@ function InsertPost(string $content, array $file = null) : bool
         $filename = uniqid() . '.' . $fileExtension;
         $fileType = exif_imagetype($file['tmp_name'][$i]);
 
-        if (InsertMedias($latsInsertId, $filename, $fileType, $file['tmp_name'][$i]) == false) {
+        if (InsertMedias($latsInsertId, $filename, mime_content_type($file['tmp_name'][$i]), $file['tmp_name'][$i]) == false) {
           EDatabaseController::rollBack();
           return false;
         }
