@@ -97,7 +97,7 @@ function ShowPosts(posts) {
       console.log(medias);
 
       for (let i = 0; i < medias.length; i++) {
-        html += '<img src="' + IMG_PATH + medias[i] +'" alt="uploaded image"><br>';
+        html += '<img id="imgPosts" src="' + IMG_PATH + medias[i] +'" alt="uploaded image"><br>';
       }
     }
     $("#posts").html(html);
