@@ -1,5 +1,5 @@
 const FILESIZE_MAX = 3145728;
-const IMG_PATH = "./assets/upload/";
+const MEDIA_PATH = "./assets/upload/";
 
 $(document).ready(() => {
   let pageName = window.location.pathname.substring(
@@ -96,20 +96,23 @@ function GetPosts() {
  */
 function ShowPosts(posts) {
   let html = "";
+
   $.each(posts, (index, post) => {
     html += post.comment + "<br>";
 
     if (post.medias != null) {
       let medias = post.medias.split(",");
+      let types = post.types.split(",");
+      console.log(post.types);
+
       for (let i = 0; i < medias.length; i++) {
-        if (medias[i].type == '') {
-          
+        if (types[i] == "image/png" || types[i] == "image/jpeg") {
+          html += '<img id="imgPosts" src="' + MEDIA_PATH + medias[i] + '" alt="uploaded image"><br>';
+        } else if (types[i] == 'audio/mpeg') {
+          html += '<audio controls> <source src="' + MEDIA_PATH + medias[i] + '" type="'+ types[i] +'"></audio><br>';
+        } else if (types[i] == 'video/mp4') {
+          html += '<video loop autoplay muted controls> <source src="' + MEDIA_PATH + medias[i] + '" type="'+ types[i] +'"></video><br>';
         }
-        html +=
-          '<img id="imgPosts" src="' +
-          IMG_PATH +
-          medias[i] +
-          '" alt="uploaded image"><br>';
       }
     }
     $("#posts").html(html);

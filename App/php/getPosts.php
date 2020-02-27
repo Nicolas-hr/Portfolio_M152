@@ -19,7 +19,8 @@ FROM post AS p
 WHERE p.idPost NOT IN (
   SELECT contenir.idPost
   FROM contenir)
-GROUP BY p.idPost;
+GROUP BY p.idPost
+ORDER BY creaDate DESC;
 EOT;
 
 try {

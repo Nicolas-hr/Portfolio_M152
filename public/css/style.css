@@ -53,3 +53,7 @@ input[type="file"] {
 #imgPosts {
   width: 600px;
 }
+
+video {
+  width: 600px;
+}
