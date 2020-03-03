@@ -1,16 +1,17 @@
 const FILESIZE_MAX = 3145728;
 const MEDIA_PATH = "./assets/upload/";
+const AJAX_PATH = "../App/php/";
 
 $(document).ready(() => {
   let pageName = window.location.pathname.substring(
     location.pathname.lastIndexOf("/") + 1
   );
 
-  $("#btnSendPosts").click(sendPost);
-
-  if (pageName == "index.php") {
+  if (pageName == "index.php" || pageName == "") {
     GetPosts();
   }
+
+  $("#btnSendPosts").click(sendPost);
 });
 
 /**
@@ -55,7 +56,7 @@ function sendPost(event) {
 
   $.ajax({
     type: "post",
-    url: "../App/php/sendPosts.php",
+    url: AJAX_PATH + "sendPosts.php",
 
     // pour l'upload de fichier
     contentType: false,
@@ -78,7 +79,7 @@ function sendPost(event) {
 function GetPosts() {
   $.ajax({
     type: "post",
-    url: "../App/php/getPosts.php",
+    url: AJAX_PATH + "getPosts.php",
     dataType: "json",
     success: data => {
       ShowPosts(data);
@@ -98,7 +99,7 @@ function ShowPosts(posts) {
   let html = "";
 
   $.each(posts, (index, post) => {
-    html += post.comment + "<br>";
+    html += `<div class="container" id="${post.idPost}"><p>${post.comment}</p>`;
 
     if (post.medias != null) {
       let medias = post.medias.split(",");
@@ -107,14 +108,56 @@ function ShowPosts(posts) {
 
       for (let i = 0; i < medias.length; i++) {
         if (types[i] == "image/png" || types[i] == "image/jpeg") {
-          html += '<img id="imgPosts" src="' + MEDIA_PATH + medias[i] + '" alt="uploaded image"><br>';
-        } else if (types[i] == 'audio/mpeg') {
-          html += '<audio controls> <source src="' + MEDIA_PATH + medias[i] + '" type="'+ types[i] +'"></audio><br>';
-        } else if (types[i] == 'video/mp4') {
-          html += '<video loop autoplay muted controls> <source src="' + MEDIA_PATH + medias[i] + '" type="'+ types[i] +'"></video><br>';
+          html +=
+            '<img id="imgPosts" src="' +
+            MEDIA_PATH +
+            medias[i] +
+            '" alt="uploaded image"><br>';
+        } else if (types[i] == "audio/mpeg") {
+          html +=
+            '<audio controls> <source src="' +
+            MEDIA_PATH +
+            medias[i] +
+            '" type="' +
+            types[i] +
+            '"></audio><br>';
+        } else if (types[i] == "video/mp4") {
+          html +=
+            '<video loop autoplay muted controls> <source src="' +
+            MEDIA_PATH +
+            medias[i] +
+            '" type="' +
+            types[i] +
+            '"></video><br>';
         }
       }
     }
-    $("#posts").html(html);
+    html += `<div class="btn-group">
+              <button type="button" class="btn btn-light">Modifier</button>
+              <button type="button" id="btnDelete" class="btn btn-danger" onclick="DeletePost($(this).closest('.container').attr('id'));">Supprimer</button>
+            </div>
+          </div>
+          <hr>`;
+  });
+  $("#posts").html(html);
+}
+
+/**
+ * @author Hoarau Nicolas
+ * @date 03.03.2020
+ *
+ * @brief Fonction qui supprime le post choisis
+ *
+ * @param {int} idPost id du post à supprimer
+ */
+function DeletePost(idPost) {
+  $.ajax({
+    type: "post",
+    url: AJAX_PATH + "deletePost.php",
+    data: { idPost: idPost },
+    dataType: "json",
+    success: () => {
+      window.location.href = './index.php';
+    }
   });
 }
