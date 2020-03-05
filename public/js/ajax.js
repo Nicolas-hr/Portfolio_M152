@@ -99,41 +99,27 @@ function ShowPosts(posts) {
   let html = "";
 
   $.each(posts, (index, post) => {
-    html += `<div class="container" id="${post.idPost}"><p>${post.comment}</p>`;
+    html += `<div class="container" id="${post.idPost}"><p id="postText">${post.comment}</p> <input type="text" value="${post.comment}" id="modify">`;
 
     if (post.medias != null) {
       let medias = post.medias.split(",");
       let types = post.types.split(",");
-      console.log(post.types);
 
       for (let i = 0; i < medias.length; i++) {
         if (types[i] == "image/png" || types[i] == "image/jpeg") {
-          html +=
-            '<img id="imgPosts" src="' +
-            MEDIA_PATH +
-            medias[i] +
-            '" alt="uploaded image"><br>';
+          html += `<img id="imgPosts" src="${MEDIA_PATH +
+            medias[i]}" alt="uploaded image"><br>`;
         } else if (types[i] == "audio/mpeg") {
-          html +=
-            '<audio controls> <source src="' +
-            MEDIA_PATH +
-            medias[i] +
-            '" type="' +
-            types[i] +
-            '"></audio><br>';
+          html += `<audio controls> <source src="${MEDIA_PATH +
+            medias[i]}" type="${types[i]}"></audio><br>`;
         } else if (types[i] == "video/mp4") {
-          html +=
-            '<video loop autoplay muted controls> <source src="' +
-            MEDIA_PATH +
-            medias[i] +
-            '" type="' +
-            types[i] +
-            '"></video><br>';
+          html += `<video loop autoplay muted controls> <source src="${MEDIA_PATH +
+            medias[i]}" type="${types[i]}"></video><br>`;
         }
       }
     }
     html += `<div class="btn-group">
-              <button type="button" class="btn btn-light">Modifier</button>
+              <button type="button" class="btn btn-light" onclick="ModifyPost($(this)) ">Modifier</button>
               <button type="button" id="btnDelete" class="btn btn-danger" onclick="DeletePost($(this).closest('.container').attr('id'));">Supprimer</button>
             </div>
           </div>
@@ -157,7 +143,25 @@ function DeletePost(idPost) {
     data: { idPost: idPost },
     dataType: "json",
     success: () => {
-      window.location.href = './index.php';
+      window.location.href = "./index.php";
     }
   });
+}
+
+function ModifyPost(button) {
+  let postText = button.closest(".container").children().closest("#postText")[0].textContent;
+
+  let btnValidate = $(`<button class="btn btn-primary">Valider</button>`).click(ValidateModification());
+  let btnCancel = $(`<button class="btn btn-secondary">Annuler</button>`).click();
+
+  button.closest(".btn-group").append(btnValidate);
+  button.closest(".btn-group").append(btnCancel);
+
+  if (postText != "") {
+    button.closest(".container").append(`<input type="text" value="${postText}">`);
+  }
+}
+
+function ValidateModification() {
+  console.log("oui");
 }

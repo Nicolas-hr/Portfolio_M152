@@ -57,3 +57,7 @@ input[type="file"] {
 video {
   width: 600px;
 }
+
+#modify {
+  display: none;
+}
