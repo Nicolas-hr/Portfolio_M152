@@ -148,20 +148,58 @@ function DeletePost(idPost) {
   });
 }
 
+/**
+ * @author Hoarau Nicolas
+ * @date 02.03.2020
+ * 
+ * @brief Fonction qui affiche les modifications faites
+ * 
+ * @param {*} button 
+ * 
+ * @version : 1.0.0
+ */
 function ModifyPost(button) {
-  let postText = button.closest(".container").children().closest("#postText")[0].textContent;
+  button.hide();
 
-  let btnValidate = $(`<button class="btn btn-primary">Valider</button>`).click(ValidateModification());
-  let btnCancel = $(`<button class="btn btn-secondary">Annuler</button>`).click();
-
-  button.closest(".btn-group").append(btnValidate);
-  button.closest(".btn-group").append(btnCancel);
+  let closestButtonCopenant = button.closest(".container");
+  let postText = closestButtonCopenant.children().closest("#postText")[0].textContent;
+  let btnValidate = $(`<button class="btn btn-primary" onclick="ValidateModification()" id="btnValidate">Valider</button>`);
+  let btnCancel = $(`<button class="btn btn-secondary" onclick="CancelModification($(this))">Annuler</button>`);
 
   if (postText != "") {
-    button.closest(".container").append(`<input type="text" value="${postText}">`);
+    closestButtonCopenant.prepend(`<input type="text" value="${postText}">`);
+    $("#postText").hide();
   }
+
+  // Récupère la source de chaque image dans le .container du bouton cliqué
+  let imgSrc = button.closest('.container').children('img').map(function () {
+    return $(this).attr('src')
+  }).get()
+
+  button.closest(".btn-group").append(btnValidate);
+  button.closest(".btn-group").prepend(btnCancel);
 }
 
 function ValidateModification() {
   console.log("oui");
+}
+
+/**
+ * @author Hoarau Nicolas
+ * @date 09.03.2020
+ * 
+ * @brief Fonction qui annule les modifications faites
+ * 
+ * @param {*} button 
+ * 
+ * @version : 1.0.0
+ */
+function CancelModification(button) {
+  button.hide();
+
+  button.closest('.btn-group').children().closest('.btn-primary').hide();
+  button.closest('.btn-group').children().closest('.btn-light').show();
+  button.closest(".container").children()[0].style.display = "none";
+  $('#postText').show();
+  console.log(button);
 }
