@@ -22,7 +22,7 @@ $(document).ready(() => {
  *
  * @param event
  *
- * @version : 1.0.0
+ * @version 1.0.0
  */
 function sendPost(event) {
   if (event) {
@@ -75,6 +75,8 @@ function sendPost(event) {
  * @date 20.02.2020
  *
  * @brief Fonction qui récupère les posts dans la base de données via ajax
+ * 
+ * @version 1.0.0
  */
 function GetPosts() {
   $.ajax({
@@ -94,6 +96,8 @@ function GetPosts() {
  * @brief Fonction qui affiche les posts
  *
  * @param {array} posts tableau des posts reçu via la fonction GetPost
+ * 
+ * @version 1.0.0
  */
 function ShowPosts(posts) {
   let html = "";
@@ -135,6 +139,8 @@ function ShowPosts(posts) {
  * @brief Fonction qui supprime le post choisis
  *
  * @param {int} idPost id du post à supprimer
+ * 
+ * @version 1.0.0
  */
 function DeletePost(idPost) {
   $.ajax({
@@ -156,32 +162,54 @@ function DeletePost(idPost) {
  * 
  * @param {*} button 
  * 
- * @version : 1.0.0
+ * @version 1.0.0
  */
 function ModifyPost(button) {
   button.hide();
 
   let closestButtonCopenant = button.closest(".container");
   let postText = closestButtonCopenant.children().closest("#postText")[0].textContent;
-  let btnValidate = $(`<button class="btn btn-primary" onclick="ValidateModification()" id="btnValidate">Valider</button>`);
+  let btnValidate = $(`<button class="btn btn-primary" onclick="ValidateModification($('#tbxTextModify').val(), $(this).closest('.container').attr('id'))" id="btnValidate">Valider</button>`);
   let btnCancel = $(`<button class="btn btn-secondary" onclick="CancelModification($(this))">Annuler</button>`);
 
   if (postText != "") {
-    closestButtonCopenant.prepend(`<input type="text" value="${postText}">`);
+    closestButtonCopenant.prepend(`<input type="text" id="tbxTextModify" value="${postText}">`);
     $("#postText").hide();
   }
 
   // Récupère la source de chaque image dans le .container du bouton cliqué
   let imgSrc = button.closest('.container').children('img').map(function () {
     return $(this).attr('src')
-  }).get()
+  });
 
   button.closest(".btn-group").append(btnValidate);
   button.closest(".btn-group").prepend(btnCancel);
 }
 
-function ValidateModification() {
-  console.log("oui");
+/**
+ * @author Hoarau Nicolas
+ * @date 10.03.2020
+ * 
+ * @brief Fonction qui met à jour les informations modifiées
+ * 
+ * @param {string} text 
+ * 
+ * @version 1.0.0
+ */
+function ValidateModification(text, idPost) {
+  console.log(idPost);
+
+  $.ajax({
+    type: "post",
+    url: AJAX_PATH + 'modify.php',
+    data: {'postText' : text, 'idPost' : idPost},
+    dataType: "json",
+    success: (response) => {
+      console.log(response.Success);
+      
+      window.location.reload();
+    }
+  });
 }
 
 /**
@@ -192,7 +220,7 @@ function ValidateModification() {
  * 
  * @param {*} button 
  * 
- * @version : 1.0.0
+ * @version 1.0.0
  */
 function CancelModification(button) {
   button.hide();
@@ -201,5 +229,4 @@ function CancelModification(button) {
   button.closest('.btn-group').children().closest('.btn-light').show();
   button.closest(".container").children()[0].style.display = "none";
   $('#postText').show();
-  console.log(button);
 }

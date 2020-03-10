@@ -4,6 +4,7 @@ require_once dirname(dirname(__DIR__)) . '/public/includes/const.inc.php';
 
 date_default_timezone_set('Europe/Zurich');
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ INSERT FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
  * @author Hoarau Nicolas
  * 
@@ -53,6 +54,7 @@ function InsertPost(string $content, array $file = null): bool
 
     return true;
   } catch (Exception $e) {
+    throw $e->getMessage();
     EDatabaseController::rollBack();
     return false;
   }
@@ -63,7 +65,7 @@ function InsertPost(string $content, array $file = null): bool
  * 
  * @brief: Fonction qui insère les medias dans la base de données
  *
- * @param integer $postId   id du post afin de l'envoyer dans la fonction LinkPostAndMedia
+ * @param integer $idPost   id du post afin de l'envoyer dans la fonction LinkPostAndMedia
  * @param string $filename  Nom du media à insérer dans la base de données
  * @param string $filetype  Type du fichier à insérer dans la base de données
  * @param string $tmpName   Chemin temporaire du fichier afin de le déplacer dans le dossier de dossier des mediad upload
@@ -72,7 +74,7 @@ function InsertPost(string $content, array $file = null): bool
  * 
  * @version 1.0
  */
-function InsertMedias(int $postId, string $filename, string $filetype, string $tmpName): bool
+function InsertMedias(int $idPost, string $filename, string $filetype, string $tmpName): bool
 {
   $date = date("Y-m-d H:i:s");
 
@@ -94,7 +96,7 @@ function InsertMedias(int $postId, string $filename, string $filetype, string $t
     $latsInsertId = EdatabaseController::getInstance()->lastInsertId();
 
     if (move_uploaded_file($tmpName, UPLOAD_PATH . $filename)) {
-      if (LinkPostAndMedia($postId, $latsInsertId) == false) {
+      if (LinkPostAndMedia($idPost, $latsInsertId) == false) {
         EDatabaseController::rollBack();
         return false;
       }
@@ -104,6 +106,7 @@ function InsertMedias(int $postId, string $filename, string $filetype, string $t
 
     return true;
   } catch (Exception $e) {
+    throw $e->getMessage();
     EDatabaseController::rollBack();
     return false;
   }
@@ -114,14 +117,14 @@ function InsertMedias(int $postId, string $filename, string $filetype, string $t
  *
  * @brief: Fonction qui lie un medias à son post dans la base de données
  *
- * @param integer $postId   Id du post
+ * @param integer $idPost   Id du post
  * @param integer $mediaId  Id du media
  * 
  * @return boolean
  * 
  * @version 1.0
  */
-function LinkPostAndMedia(int $postId, int $mediaId): bool
+function LinkPostAndMedia(int $idPost, int $mediaId): bool
 {
   $req = <<<EOT
   INSERT INTO contenir(idPost, idMedia) VALUES (:idPost, :idMedia);
@@ -131,7 +134,7 @@ function LinkPostAndMedia(int $postId, int $mediaId): bool
     EDatabaseController::beginTransaction();
 
     $query = EDatabaseController::getInstance()->prepare($req);
-    $query->bindParam(':idPost', $postId, PDO::PARAM_INT);
+    $query->bindParam(':idPost', $idPost, PDO::PARAM_INT);
     $query->bindParam(':idMedia', $mediaId, PDO::PARAM_INT);
 
     $query->execute();
@@ -140,10 +143,13 @@ function LinkPostAndMedia(int $postId, int $mediaId): bool
 
     return true;
   } catch (Exception $e) {
+    throw $e->getMessage();
     EDatabaseController::rollBack();
     return false;
   }
 }
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**
  * @author Hoarau Nicolas
@@ -186,6 +192,7 @@ function DeletePost(int $idPost): bool
 
     return true;
   } catch (Exception $e) {
+    throw $e->getMessage();
     EDatabaseController::rollBack();
     return false;
   }
@@ -221,6 +228,7 @@ function GetPostMedia(int $idPost): ?array
 
     return count($queryData) > 0 ? $queryData : null;
   } catch (Exception $e) {
+    throw $e->getMessage();
     return null;
   }
 }
@@ -235,24 +243,47 @@ function GetPostMedia(int $idPost): ?array
  * 
  * @version 1.0
  */
-function DeleteLink(int $idPost): bool
+function DeleteLink(int $idPost, int $idMedia = null): bool
 {
-  $req = <<<EOT
+  if ($idMedia == null) {
+    $req = <<<EOT
   DELETE FROM contenir WHERE idPost = :idPost;
   EOT;
 
-  try {
-    EDatabaseController::beginTransaction();
+    try {
+      EDatabaseController::beginTransaction();
 
-    $query = EDatabaseController::getInstance()->prepare($req);
-    $query->bindParam(':idPost', $idPost, PDO::PARAM_INT);
-    $query->execute();
+      $query = EDatabaseController::getInstance()->prepare($req);
+      $query->bindParam(':idPost', $idPost, PDO::PARAM_INT);
+      $query->execute();
 
-    EDatabaseController::commit();
-    return true;
-  } catch (Exception $e) {
-    EDatabaseController::rollBack();
-    return false;
+      EDatabaseController::commit();
+      return true;
+    } catch (Exception $e) {
+      throw $e->getMessage();
+
+      EDatabaseController::rollBack();
+      return false;
+    }
+  } else {
+    $req = <<<EOT
+  DELETE FROM contenir WHERE idPost = :idPost AND idMedia = :idMedia;
+  EOT;
+
+    try {
+      EDatabaseController::beginTransaction();
+
+      $query = EDatabaseController::getInstance()->prepare($req);
+      $query->bindParam(':idPost', $idPost, PDO::PARAM_INT);
+      $query->bindParam(':idMedia', $idMedia, PDO::PARAM_INT);
+
+      $query->execute();
+
+      return true;
+    } catch (Exception $e) {
+      throw $e->getMessage();
+      return false;
+    }
   }
 }
 
@@ -287,7 +318,52 @@ function DeleteMedia(int $idMedia, string $mediaName): bool
       return true;
     }
   } catch (Exception $e) {
+    throw $e->getMessage();
     EDatabaseController::rollBack();
+    return false;
+  }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ UPDATE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/**
+ * @author Hoarau Nicolas
+ * @breif Fonction qui modifie le text d'un post choisis
+ *
+ * @param string $comment
+ * @param integer $idPost
+ * 
+ * @return boolean
+ * 
+ * @version 1.0
+ */
+function UpdateComment(string $comment, int $idPost): bool
+{
+  $date = date("Y-m-d H:i:s");
+
+  $req = <<<EOT
+  UPDATE post 
+  SET commentaire = :comment, modificationDate = :date 
+  WHERE idPost = :idPost;
+  EOT;
+
+  try {
+    EDatabaseController::beginTransaction();
+
+    $query = EDatabaseController::prepare($req);
+
+    $query->bindParam(':comment', $comment, PDO::PARAM_STR);
+    $query->bindParam(':idPost', $idPost, PDO::PARAM_INT);
+    $query->bindParam(':date', $date);
+
+    $query->execute();
+
+    EDatabaseController::commit();
+
+    return true;
+  } catch (Exception $e) {
+    EDatabaseController::rollBack();
+
+    throw $e->getMessage();
     return false;
   }
 }
