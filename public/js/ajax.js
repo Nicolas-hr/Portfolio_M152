@@ -206,9 +206,9 @@ function ModifyPost(button) {
   }
 
   // Récupère la source de chaque image dans le .container du bouton cliqué
-  let imgSrc = button.closest('.container').children('img').map(function () {
-    return $(this).attr('src')
-  });
+  // let imgSrc = button.closest('.container').children('img').map(function () {
+  //   return $(this).attr('src')
+  // });
 
   button.closest(".btn-group").append(btnValidate);
   button.closest(".btn-group").prepend(btnCancel);
@@ -224,18 +224,20 @@ function ModifyPost(button) {
  * 
  * @version 1.0.0
  */
-function ValidateModification(text, idPost) {
-  $.ajax({
-    type: "post",
-    url: AJAX_PATH + 'modify.php',
-    data: { 'postText': text, 'idPost': idPost },
-    dataType: "json",
-    success: (response) => {
-      console.log(response.Success);
+function ValidateModification(text, idPost, img) {
+  console.log(img);
+  
+  // $.ajax({
+  //   type: "post",
+  //   url: AJAX_PATH + 'modify.php',
+  //   data: { 'postText': text, 'idPost': idPost },
+  //   dataType: "json",
+  //   success: (response) => {
+  //     console.log(response.Success);
 
-      window.location.reload();
-    }
-  });
+  //     window.location.reload();
+  //   }
+  // });
 }
 
 /**
@@ -283,6 +285,6 @@ function DisplayMedias(event, input) {
       }
     }
 
-    input.closest('.container').children().closest(".btn-group").before(html);
+    input.closest('.container').find(".btn-group").before(html);
   }
 }
