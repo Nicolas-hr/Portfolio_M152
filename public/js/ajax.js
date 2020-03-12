@@ -171,10 +171,38 @@ function ModifyPost(button) {
   let postText = closestButtonCopenant.children().closest("#postText")[0].textContent;
   let btnValidate = $(`<button class="btn btn-primary" onclick="ValidateModification($('#tbxTextModify').val(), $(this).closest('.container').attr('id'))" id="btnValidate">Valider</button>`);
   let btnCancel = $(`<button class="btn btn-secondary" onclick="CancelModification($(this))">Annuler</button>`);
+  let html = `<table>
+                <tr>
+                  <td>
+                    <input type="text" id="tbxTextModify" value="${postText}"></td>
+                  </td>
+                  <td>
+                    <!-- iamge -->
+                    <label for="inputImg" class="custom-file-upload">
+                      <img src="./assets/img/fileinput-img.svg" alt="icon appareil photo">
+                    </label>
+                    <input type="file" name="inputImg" id="inputImg" onchange="DisplayMedias(event, $(this))" accept="image/*" multiple>
+                  </td>
+                  <td>
+                    <!-- video -->
+                    <label for="inputAudio" class="custom-file-upload">
+                      <img src="./assets/img/fileinput-audio.svg" alt="icon musique">
+                    </label>
+                    <input type="file" name="inputAudio" id="inputAudio" onchange="DisplayMedias(event, $(this))" accept="audio/*" multiple>
+                  </td>
+                  <td>
+                    <!-- video -->
+                    <label for="inputVideo" class="custom-file-upload">
+                      <img src="./assets/img/fileinput-video.svg" alt="icon camera">
+                    </label>
+                    <input type="file" name="inputVideo" id="inputVideo" onchange="DisplayMedias(event, $(this))" accept="video/*" multiple>
+                  </td>
+                </tr>
+              </table>`;
 
   if (postText != "") {
-    closestButtonCopenant.prepend(`<input type="text" id="tbxTextModify" value="${postText}">`);
-    $("#postText").hide();
+    closestButtonCopenant.prepend(html);
+    closestButtonCopenant.children().closest("#postText").hide();
   }
 
   // Récupère la source de chaque image dans le .container du bouton cliqué
@@ -197,16 +225,14 @@ function ModifyPost(button) {
  * @version 1.0.0
  */
 function ValidateModification(text, idPost) {
-  console.log(idPost);
-
   $.ajax({
     type: "post",
     url: AJAX_PATH + 'modify.php',
-    data: {'postText' : text, 'idPost' : idPost},
+    data: { 'postText': text, 'idPost': idPost },
     dataType: "json",
     success: (response) => {
       console.log(response.Success);
-      
+
       window.location.reload();
     }
   });
@@ -229,4 +255,34 @@ function CancelModification(button) {
   button.closest('.btn-group').children().closest('.btn-light').show();
   button.closest(".container").children()[0].style.display = "none";
   $('#postText').show();
+}
+
+/**
+ * @author Hoarau Nicolas
+ * @date 12.03.2020
+ * 
+ * @brief Fonction affiche les images dès qu'elles sont choisis dans l'input
+ * 
+ * @param {*} input 
+ * @param {*} event 
+ * 
+ * @version 1.0.0
+ */
+function DisplayMedias(event, input) {
+  if (event.target.files) {
+    let html = ``;
+    
+    for (let i = 0; i < event.target.files.length; i++) {
+      let media = event.target.files[i];
+      if (media.type == "image/png" || media.type == "image/jpeg") {
+        html += `<img id="imgPosts" src="${URL.createObjectURL(media)}" alt="uploaded image"><br>`;
+      } else if (media.type == "audio/mpeg") {
+        html += `<audio controls> <source src="${URL.createObjectURL(media)}" type="${media.type}"></audio><br>`;
+      } else if (media.type == "video/mp4") {
+        html += `<video loop autoplay muted controls> <source src="${URL.createObjectURL(media)}" type="${media.type}"></video><br>`;
+      }
+    }
+
+    input.closest('.container').children().closest(".btn-group").before(html);
+  }
 }
