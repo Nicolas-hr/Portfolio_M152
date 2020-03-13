@@ -169,7 +169,7 @@ function ModifyPost(button) {
 
   let closestButtonCopenant = button.closest(".container");
   let postText = closestButtonCopenant.children().closest("#postText")[0].textContent;
-  let btnValidate = $(`<button class="btn btn-primary" onclick="ValidateModification($('#tbxTextModify').val(), $(this).closest('.container').attr('id'))" id="btnValidate">Valider</button>`);
+  let btnValidate = $(`<button class="btn btn-primary" onclick="ValidateModification(event, $('#tbxTextModify').val(), $(this).closest('.container').attr('id'))" id="btnValidate">Valider</button>`);
   let btnCancel = $(`<button class="btn btn-secondary" onclick="CancelModification($(this))">Annuler</button>`);
   let html = `<table>
                 <tr>
@@ -224,20 +224,53 @@ function ModifyPost(button) {
  * 
  * @version 1.0.0
  */
-function ValidateModification(text, idPost, img) {
-  console.log(img);
-  
-  // $.ajax({
-  //   type: "post",
-  //   url: AJAX_PATH + 'modify.php',
-  //   data: { 'postText': text, 'idPost': idPost },
-  //   dataType: "json",
-  //   success: (response) => {
-  //     console.log(response.Success);
+function ValidateModification(event, text, idPost) {
+  if (document.getElementsByClassName('vsc-controller') !== null) {
+    let pathToTr = event.target.closest('.container').children[0].children[0].children[0];
+  } else {
+    let pathToTr = event.target.closest('.container').children[1].children[0].children[0];
+  }
 
-  //     window.location.reload();
-  //   }
-  // });
+  let inputImg = pathToTr.children[1].children[1].files;
+  let inputAudio = pathToTr.children[2].children[1].files;
+  let inputVideo = pathToTr.children[3].children[1].files;
+
+  let formdata = new FormData();
+
+  let content = $("#postText").val();
+  formdata.append("postText", content);
+
+  for (let x = 0; x < inputImg.length; x++) {
+    let file = inputImg[x];
+
+    if (file["size"] < FILESIZE_MAX) {
+      formdata.append("medias[]", file);
+    } else {
+      console.log("trop gros");
+    }
+  }
+
+  for (let x = 0; x < inputAudio.length; x++) {
+    let file = inputAudio[x];
+    formdata.append("medias[]", file);
+  }
+
+  for (let x = 0; x < inputVideo.length; x++) {
+    let file = inputVideo[x];
+    formdata.append("medias[]", file);
+  }
+
+  $.ajax({
+    type: "post",
+    url: AJAX_PATH + 'modify.php',
+    data: formdata,
+    dataType: "json",
+    success: (response) => {
+      console.log(response.Success);
+
+      window.location.reload();
+    }
+  });
 }
 
 /**
@@ -273,7 +306,7 @@ function CancelModification(button) {
 function DisplayMedias(event, input) {
   if (event.target.files) {
     let html = ``;
-    
+
     for (let i = 0; i < event.target.files.length; i++) {
       let media = event.target.files[i];
       if (media.type == "image/png" || media.type == "image/jpeg") {
