@@ -149,7 +149,7 @@ function DeletePost(idPost) {
     data: { idPost: idPost },
     dataType: "json",
     success: () => {
-      window.location.href = "./index.php";
+      GetPosts();
     }
   });
 }
@@ -169,7 +169,7 @@ function ModifyPost(button) {
 
   let closestButtonCopenant = button.closest(".container");
   let postText = closestButtonCopenant.children().closest("#postText")[0].textContent;
-  let btnValidate = $(`<button class="btn btn-primary" onclick="ValidateModification($('#tbxTextModify').val(), $(this).closest('.container').attr('id'))" id="btnValidate">Valider</button>`);
+  let btnValidate = $(`<button class="btn btn-primary" onclick="ValidateModification(event, $('#tbxTextModify').val(), $(this).closest('.container').attr('id'))" id="btnValidate">Valider</button>`);
   let btnCancel = $(`<button class="btn btn-secondary" onclick="CancelModification($(this))">Annuler</button>`);
   let html = `<table>
                 <tr>
@@ -224,9 +224,8 @@ function ModifyPost(button) {
  * 
  * @version 1.0.0
  */
-function ValidateModification(text, idPost, img) {
-  console.log(img);
-  
+function ValidateModification(event, text, idPost) {
+  console.log(event.target.closest('.container').children);
   // $.ajax({
   //   type: "post",
   //   url: AJAX_PATH + 'modify.php',
@@ -234,8 +233,7 @@ function ValidateModification(text, idPost, img) {
   //   dataType: "json",
   //   success: (response) => {
   //     console.log(response.Success);
-
-  //     window.location.reload();
+  // GetPosts();
   //   }
   // });
 }
@@ -256,6 +254,7 @@ function CancelModification(button) {
   button.closest('.btn-group').children().closest('.btn-primary').hide();
   button.closest('.btn-group').children().closest('.btn-light').show();
   button.closest(".container").children()[0].style.display = "none";
+  $(".mediaAdded").hide();
   $('#postText').show();
 }
 
@@ -273,15 +272,15 @@ function CancelModification(button) {
 function DisplayMedias(event, input) {
   if (event.target.files) {
     let html = ``;
-    
+
     for (let i = 0; i < event.target.files.length; i++) {
       let media = event.target.files[i];
       if (media.type == "image/png" || media.type == "image/jpeg") {
-        html += `<img id="imgPosts" src="${URL.createObjectURL(media)}" alt="uploaded image"><br>`;
+        html += `<img id="imgPosts" class="mediaAdded" src="${URL.createObjectURL(media)}" alt="uploaded image"><br>`;
       } else if (media.type == "audio/mpeg") {
-        html += `<audio controls> <source src="${URL.createObjectURL(media)}" type="${media.type}"></audio><br>`;
+        html += `<audio controls class="mediaAdded"> <source src="${URL.createObjectURL(media)}" type="${media.type}"></audio><br>`;
       } else if (media.type == "video/mp4") {
-        html += `<video loop autoplay muted controls> <source src="${URL.createObjectURL(media)}" type="${media.type}"></video><br>`;
+        html += `<video loop autoplay muted controls class="mediaAdded"> <source src="${URL.createObjectURL(media)}" type="${media.type}"></video><br>`;
       }
     }
 
