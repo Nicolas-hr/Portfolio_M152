@@ -313,7 +313,6 @@ function CancelModification(button) {
 function DisplayMedias(event, input) {
   if (event.target.files) 
   {
-    // let pathToBtnGroup = ($('.vsc-controller').length == 0) ? event.target.closest('.container').children[3] : event.target.closest('.container').children[1];
     let html = ``;
 
     for (let i = 0; i < event.target.files.length; i++) {
@@ -327,9 +326,6 @@ function DisplayMedias(event, input) {
       }
     }
 
-    // console.log(pathToBtnGroup);
     input.closest('.container').find(".btn-group").before(html);
-
-    // event.target.closest('.container').children[3].before(html);
   }
 }
