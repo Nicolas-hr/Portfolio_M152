@@ -118,13 +118,13 @@ function InsertMedias(int $idPost, string $filename, string $filetype, string $t
  * @brief: Fonction qui lie un medias à son post dans la base de données
  *
  * @param integer $idPost   Id du post
- * @param integer $mediaId  Id du media
+ * @param integer $idMedia  Id du media
  * 
  * @return boolean
  * 
  * @version 1.0
  */
-function LinkPostAndMedia(int $idPost, int $mediaId): bool
+function LinkPostAndMedia(int $idPost, int $idMedia): bool
 {
   $req = <<<EOT
   INSERT INTO contenir(idPost, idMedia) VALUES (:idPost, :idMedia);
@@ -135,7 +135,7 @@ function LinkPostAndMedia(int $idPost, int $mediaId): bool
 
     $query = EDatabaseController::getInstance()->prepare($req);
     $query->bindParam(':idPost', $idPost, PDO::PARAM_INT);
-    $query->bindParam(':idMedia', $mediaId, PDO::PARAM_INT);
+    $query->bindParam(':idMedia', $idMedia, PDO::PARAM_INT);
 
     $query->execute();
 
