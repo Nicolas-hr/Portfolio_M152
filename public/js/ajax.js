@@ -171,34 +171,36 @@ function ModifyPost(button) {
   let postText = closestButtonCopenant.children().closest("#postText")[0].textContent;
   let btnValidate = $(`<button class="btn btn-primary" onclick="ValidateModification(event, $('#tbxTextModify').val(), $(this).closest('.container').attr('id'))" id="btnValidate">Valider</button>`);
   let btnCancel = $(`<button class="btn btn-secondary" onclick="CancelModification($(this))">Annuler</button>`);
-  let html = `<table>
-                <tr>
-                  <td>
-                    <input type="text" id="tbxTextModify" value="${postText}"></td>
-                  </td>
-                  <td>
-                    <!-- iamge -->
-                    <label for="inputImg" class="custom-file-upload">
-                      <img src="./assets/img/fileinput-img.svg" alt="icon appareil photo">
-                    </label>
-                    <input type="file" name="inputImg" id="inputImg" onchange="DisplayMedias(event, $(this))" accept="image/*" multiple>
-                  </td>
-                  <td>
-                    <!-- video -->
-                    <label for="inputAudio" class="custom-file-upload">
-                      <img src="./assets/img/fileinput-audio.svg" alt="icon musique">
-                    </label>
-                    <input type="file" name="inputAudio" id="inputAudio" onchange="DisplayMedias(event, $(this))" accept="audio/*" multiple>
-                  </td>
-                  <td>
-                    <!-- video -->
-                    <label for="inputVideo" class="custom-file-upload">
-                      <img src="./assets/img/fileinput-video.svg" alt="icon camera">
-                    </label>
-                    <input type="file" name="inputVideo" id="inputVideo" onchange="DisplayMedias(event, $(this))" accept="video/*" multiple>
-                  </td>
-                </tr>
-              </table>`;
+  let html = `<form method="post" id="formPost" enctype="multipart/form-data">
+                <table>
+                  <tr>
+                    <td>
+                      <input type="text" id="tbxTextModify" value="${postText}"></td>
+                    </td>
+                    <td>
+                      <!-- iamge -->
+                      <label for="inputImg" class="custom-file-upload">
+                        <img src="./assets/img/fileinput-img.svg" alt="icon appareil photo">
+                      </label>
+                      <input type="file" name="inputImg" id="inputImg" onchange="DisplayMedias(event, $(this))" accept="image/*" multiple>
+                    </td>
+                    <td>
+                      <!-- video -->
+                      <label for="inputAudio" class="custom-file-upload">
+                        <img src="./assets/img/fileinput-audio.svg" alt="icon musique">
+                      </label>
+                      <input type="file" name="inputAudio" id="inputAudio" onchange="DisplayMedias(event, $(this))" accept="audio/*" multiple>
+                    </td>
+                    <td>
+                      <!-- video -->
+                      <label for="inputVideo" class="custom-file-upload">
+                        <img src="./assets/img/fileinput-video.svg" alt="icon camera">
+                      </label>
+                      <input type="file" name="inputVideo" id="inputVideo" onchange="DisplayMedias(event, $(this))" accept="video/*" multiple>
+                    </td>
+                  </tr>
+                </table>
+              </form>`;
 
   if (postText != "") {
     closestButtonCopenant.prepend(html);
@@ -225,20 +227,20 @@ function ModifyPost(button) {
  * @version 1.0.0
  */
 function ValidateModification(event, text, idPost) {
-  if (document.getElementsByClassName('vsc-controller') !== null) {
-    let pathToTr = event.target.closest('.container').children[0].children[0].children[0];
-  } else {
-    let pathToTr = event.target.closest('.container').children[1].children[0].children[0];
+  if (event) {
+    event.preventDefault();
   }
+
+  let pathToTr = ($('.vsc-controller').length == 0) ? event.target.closest('.container').children[0].children[0].children[0].children[0] : event.target.closest('.container').children[1].children[0].children[0].children[0];
+  
+  let formdata = new FormData();
 
   let inputImg = pathToTr.children[1].children[1].files;
   let inputAudio = pathToTr.children[2].children[1].files;
   let inputVideo = pathToTr.children[3].children[1].files;
 
-  let formdata = new FormData();
-
-  let content = $("#postText").val();
-  formdata.append("postText", content);
+  formdata.append("postText", text);
+  formdata.append("idPost", idPost);
 
   for (let x = 0; x < inputImg.length; x++) {
     let file = inputImg[x];
@@ -263,12 +265,16 @@ function ValidateModification(event, text, idPost) {
   $.ajax({
     type: "post",
     url: AJAX_PATH + 'modify.php',
+    contentType: false,
+    processData: false,
     data: formdata,
     dataType: "json",
     success: (response) => {
       console.log(response.Success);
 
       window.location.reload();
+    }, error: (err) => {
+      console.log(err);
     }
   });
 }
@@ -305,7 +311,9 @@ function CancelModification(button) {
  * @version 1.0.0
  */
 function DisplayMedias(event, input) {
-  if (event.target.files) {
+  if (event.target.files) 
+  {
+    // let pathToBtnGroup = ($('.vsc-controller').length == 0) ? event.target.closest('.container').children[3] : event.target.closest('.container').children[1];
     let html = ``;
 
     for (let i = 0; i < event.target.files.length; i++) {
@@ -319,6 +327,9 @@ function DisplayMedias(event, input) {
       }
     }
 
+    // console.log(pathToBtnGroup);
     input.closest('.container').find(".btn-group").before(html);
+
+    // event.target.closest('.container').children[3].before(html);
   }
 }
