@@ -258,13 +258,13 @@ function ValidateModification(event, text, idPost) {
     event.preventDefault();
   }
 
-  let pathToTr = ($('.vsc-controller').length == 0) ? event.target.closest('.container').children[0].children[0].children[0].children[0] : event.target.closest('.container').children[1].children[0].children[0].children[0];
+  let pathToForm = event.target.parentElement.parentElement.children[0].children[0].children[0].children[0];
 
   let formdata = new FormData();
 
-  let inputImg = pathToTr.children[1].children[1].files;
-  let inputAudio = pathToTr.children[2].children[1].files;
-  let inputVideo = pathToTr.children[3].children[1].files;
+  let inputImg = pathToForm.children[1].children[1].files;
+  let inputAudio = pathToForm.children[2].children[1].files;
+  let inputVideo = pathToForm.children[3].children[1].files;
 
   formdata.append("postText", text);
   formdata.append("idPost", idPost);

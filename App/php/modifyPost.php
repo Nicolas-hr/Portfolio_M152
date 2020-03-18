@@ -56,8 +56,8 @@ if (isset($_POST['postText'])) {
   if (UpdateComment($content, $idPost)) {
     echo json_encode([
       'ReturnCode' => 0,
-      'Success' => "Post delete correctly"
-    ]);
+      'Success' => "Post updated correctly"
+      ]);
     exit();
   }
 }
