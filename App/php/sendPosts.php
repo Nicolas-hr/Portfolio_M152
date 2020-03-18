@@ -11,17 +11,17 @@ if (isset($_FILES['medias'])) {
     $mimeType = finfo_file($finfo, $file['tmp_name'][$i]);
     $fileType = explode('/', $mimeType)[0];
 
-    if ($fileType != 'image' || $fileType  != 'audio' || $fileType != 'video') {
-      if ($file['size'][$i] > FILESIZE_MAX && !image_type_to_mime_type($fileType)) {
+    if ($file['size'][$i] > FILESIZE_MAX && $fileType == 'image') {
+      if ($fileType != 'image' && $fileType  != 'audio' && $fileType != 'video') {
         echo json_encode([
           'ReturnCode' => 2,
-          'Error' => "Le fichier est trop gros"
+          'Error' => "This type of media isn't accepted"
         ]);
         exit();
       }
       echo json_encode([
-        'ReturnCode' => 3,
-        'Error' => "Ce type de média n'est pas accepté"
+        'ReturnCode' => 1,
+        'Error' => "File too big"
       ]);
       exit();
     }
@@ -37,7 +37,7 @@ if (isset($_FILES['medias'])) {
     exit();
   } else {
     echo json_encode([
-      'ReturnCode' => 4,
+      'ReturnCode' => 3,
       'Error' => "Error during the insert"
     ]);
     exit();
@@ -54,7 +54,7 @@ if (InsertPost($content)) {
   exit();
 } else {
   echo json_encode([
-    'ReturnCode' => 4,
+    'ReturnCode' => 3,
     'Error' => "Error during the insert"
   ]);
   exit();
