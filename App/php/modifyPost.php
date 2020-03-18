@@ -22,7 +22,6 @@ if (isset($_FILES['medias'])) {
         $fileType = exif_imagetype($file['tmp_name'][$i]);
 
         if (InsertMedias($idPost, $filename, mime_content_type($file['tmp_name'][$i]), $file['tmp_name'][$i])) {
-
           if ($i == count($file['name']) - 1) {
             if ($mediaSuppressed != null) {
               for ($j = 0; $j < count($mediaSuppressed); $j++) {

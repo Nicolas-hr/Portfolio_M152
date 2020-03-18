@@ -308,18 +308,17 @@ function DeleteMedia(int $idMedia, string $mediaName): bool
   EOT;
 
   try {
-    if (unlink(UPLOAD_PATH . $mediaName)) {
+    EDatabaseController::beginTransaction();
 
-      EDatabaseController::beginTransaction();
+    $query = EDatabaseController::prepare($req);
+    $query->bindParam(':idMedia', $idMedia, PDO::PARAM_INT);
 
-      $query = EDatabaseController::prepare($req);
-      $query->bindParam(':idMedia', $idMedia, PDO::PARAM_INT);
+    if ($query->execute()) {
+      if (unlink(UPLOAD_PATH . $mediaName)) {
+        EDatabaseController::commit();
 
-      $query->execute();
-
-      EDatabaseController::commit();
-
-      return true;
+        return true;
+      }
     }
   } catch (Exception $e) {
     throw $e->getMessage();
@@ -382,7 +381,7 @@ function UpdateComment(string $comment, int $idPost): bool
  * 
  * @version 1.0
  */
-function GetMediaIdByName(string $filename) : int
+function GetMediaIdByName(string $filename): int
 {
   $req = <<<EOT
   SELECT idMedia FROM media WHERE nomMedia = :filename;
