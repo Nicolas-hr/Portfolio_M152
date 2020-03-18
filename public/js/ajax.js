@@ -317,13 +317,7 @@ function ValidateModification(event, text, idPost) {
  * @version 1.0.0
  */
 function CancelModification(button) {
-  button.hide();
-
-  button.closest('.btn-group').children().closest('.btn-primary').hide();
-  button.closest('.btn-group').children().closest('.btn-light').show();
-  button.closest(".container").children()[0].style.display = "none";
-  $(".mediaAdded").hide();
-  $('#postText').show();
+  GetPosts();
 }
 
 /**
@@ -367,7 +361,7 @@ function DisplayMedias(event, input) {
  * @version 1.0.0
  */
 function RemoveMedia(event) {
-  let pathToMedia = $('.vsc-controller').length == 0 ? event.target.parentElement.parentElement.firstChild.firstChild : event.target.parentElement.parentElement.firstChild.children[1];
+  let pathToMedia = event.target.parentElement.parentElement.firstChild.childElementCount == 1 ? event.target.parentElement.parentElement.firstChild.firstChild : event.target.parentElement.parentElement.firstChild.children[1];
 
   pathToMedia.style.display == 'none' ? pathToMedia.style.display = 'initial' : pathToMedia.style.display = 'none';
 }
