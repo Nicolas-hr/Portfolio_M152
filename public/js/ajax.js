@@ -1,3 +1,4 @@
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CONSTANTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const FILESIZE_MAX = 3145728;
 const MEDIA_PATH = "./assets/upload/";
 const AJAX_PATH = "../App/php/";
@@ -11,9 +12,10 @@ $(document).ready(() => {
     GetPosts();
   }
 
-  $("#btnSendPosts").click(sendPost);
+  $("#btnSendPosts").click(SendPost);
 });
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREATE POSTS FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
  * @author Hoarau Nicolas
  * @date 30.01.2020
@@ -24,7 +26,7 @@ $(document).ready(() => {
  *
  * @version 1.0.0
  */
-function sendPost(event) {
+function SendPost(event) {
   if (event) {
     event.preventDefault();
   }
@@ -66,10 +68,14 @@ function sendPost(event) {
     dataType: "json",
     success: () => {
       window.location.href = "./index.php";
+    },
+    error: (error) => {
+      console.log(error);
     }
   });
 }
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SHOW POSTS FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
  * @author Hoarau Nicolas
  * @date 20.02.2020
@@ -103,25 +109,32 @@ function ShowPosts(posts) {
   let html = "";
 
   $.each(posts, (index, post) => {
-    html += `<div class="container" id="${post.idPost}"><p id="postText">${post.comment}</p> <input type="text" value="${post.comment}" id="modify">`;
+    html += `<div class="container" id="${post.idPost}">
+                <p id="postText">${post.comment}</p>
+                <input type="text" value="${post.comment}" id="modify">`;
 
     if (post.medias != null) {
       let medias = post.medias.split(",");
       let types = post.types.split(",");
+      html += `<table id="tableMedia">`;
 
       for (let i = 0; i < medias.length; i++) {
         if (types[i] == "image/png" || types[i] == "image/jpeg") {
-          html += `<img id="imgPosts" src="${MEDIA_PATH +
-            medias[i]}" alt="uploaded image"><br>`;
+          html += `<tr><td><img id="imgPosts" src="${MEDIA_PATH + medias[i]}" alt="uploaded image">
+          </td><td class="removeMedia"><img src="./assets/img/delete-icon.svg" id="deleteIcon" onclick="RemoveMedia(event)"></td></tr>`;
         } else if (types[i] == "audio/mpeg") {
-          html += `<audio controls> <source src="${MEDIA_PATH +
-            medias[i]}" type="${types[i]}"></audio><br>`;
+          html += `<td><audio controls> <source src="${MEDIA_PATH + medias[i]}" type="${types[i]}">
+          </audio></td><td class="removeMedia"><img src="./assets/img/delete-icon.svg" id="deleteIcon" onclick="RemoveMedia(event)"></td></tr>`;
+
         } else if (types[i] == "video/mp4") {
-          html += `<video loop autoplay muted controls> <source src="${MEDIA_PATH +
-            medias[i]}" type="${types[i]}"></video><br>`;
+          html += `<tr><td><video loop autoplay muted controls> <source src="${MEDIA_PATH + medias[i]}" type="${types[i]}">
+          </video></td><td class="removeMedia"><img src="./assets/img/delete-icon.svg" id="deleteIcon" onclick="RemoveMedia(event)"></td></tr>`;
         }
       }
+
+      html += `</table>`;
     }
+
     html += `<div class="btn-group">
               <button type="button" class="btn btn-light" onclick="ModifyPost($(this)) ">Modifier</button>
               <button type="button" id="btnDelete" class="btn btn-danger" onclick="DeletePost($(this).closest('.container').attr('id'));">Supprimer</button>
@@ -132,6 +145,7 @@ function ShowPosts(posts) {
   $("#posts").html(html);
 }
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE POSTS FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
  * @author Hoarau Nicolas
  * @date 03.03.2020
@@ -154,6 +168,7 @@ function DeletePost(idPost) {
   });
 }
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MODIFY/UPDATE POSTS FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
  * @author Hoarau Nicolas
  * @date 02.03.2020
@@ -167,8 +182,8 @@ function DeletePost(idPost) {
 function ModifyPost(button) {
   button.hide();
 
-  let closestButtonCopenant = button.closest(".container");
-  let postText = closestButtonCopenant.children().closest("#postText")[0].textContent;
+  let postContainer = button.closest(".container");
+  let postText = postContainer.children().closest("#postText")[0].textContent;
   let btnValidate = $(`<button class="btn btn-primary" onclick="ValidateModification(event, $('#tbxTextModify').val(), $(this).closest('.container').attr('id'))" id="btnValidate">Valider</button>`);
   let btnCancel = $(`<button class="btn btn-secondary" onclick="CancelModification($(this))">Annuler</button>`);
   let html = `<form method="post" id="formPost" enctype="multipart/form-data">
@@ -202,18 +217,28 @@ function ModifyPost(button) {
                 </table>
               </form>`;
 
+  let pathToTbody = postContainer[0].length == 4 ? postContainer[0].children[3].children[0] : null;
+
   if (postText != "") {
-    closestButtonCopenant.prepend(html);
-    closestButtonCopenant.children().closest("#postText").hide();
+    postContainer.prepend(html);
+    postContainer.children().closest("#postText").hide();
+  }
+
+  if (pathToTbody != null) {
+    for (let i = 0; i < pathToTbody.children.length; i++) {
+      console.log(pathToTbody.children[i]);
+    }
   }
 
   // Récupère la source de chaque image dans le .container du bouton cliqué
-  // let imgSrc = button.closest('.container').children('img').map(function () {
-  //   return $(this).attr('src')
-  // });
+  let imgSrc = button.closest('.container').children('img').map(function () {
+    console.log($(this).attr('src'));
+
+  });
 
   button.closest(".btn-group").append(btnValidate);
   button.closest(".btn-group").prepend(btnCancel);
+  $('.removeMedia').show();
 }
 
 /**
@@ -221,8 +246,10 @@ function ModifyPost(button) {
  * @date 10.03.2020
  * 
  * @brief Fonction qui met à jour les informations modifiées
- * 
+ *
+ * @param {*} event 
  * @param {string} text 
+ * @param {int} idPost 
  * 
  * @version 1.0.0
  */
@@ -232,7 +259,7 @@ function ValidateModification(event, text, idPost) {
   }
 
   let pathToTr = ($('.vsc-controller').length == 0) ? event.target.closest('.container').children[0].children[0].children[0].children[0] : event.target.closest('.container').children[1].children[0].children[0].children[0];
-  
+
   let formdata = new FormData();
 
   let inputImg = pathToTr.children[1].children[1].files;
@@ -264,7 +291,7 @@ function ValidateModification(event, text, idPost) {
 
   $.ajax({
     type: "post",
-    url: AJAX_PATH + 'modify.php',
+    url: AJAX_PATH + 'modifyPost.php',
     contentType: false,
     processData: false,
     data: formdata,
@@ -272,7 +299,7 @@ function ValidateModification(event, text, idPost) {
     success: (response) => {
       console.log(response.Success);
 
-      window.location.reload();
+      GetPosts();
     }, error: (err) => {
       console.log(err);
     }
@@ -311,8 +338,7 @@ function CancelModification(button) {
  * @version 1.0.0
  */
 function DisplayMedias(event, input) {
-  if (event.target.files) 
-  {
+  if (event.target.files) {
     let html = ``;
 
     for (let i = 0; i < event.target.files.length; i++) {
@@ -328,4 +354,20 @@ function DisplayMedias(event, input) {
 
     input.closest('.container').find(".btn-group").before(html);
   }
+}
+
+/**
+ * @author Hoarau Nicolas
+ * @date 17.03.2020
+ * 
+ * @brief Fonction qui retire de l'affichage le media sélectionné
+ * 
+ * @param {*} event 
+ * 
+ * @version 1.0.0
+ */
+function RemoveMedia(event) {
+  let pathToMedia = $('.vsc-controller').length == 0 ? event.target.parentElement.parentElement.firstChild.firstChild : event.target.parentElement.parentElement.firstChild.children[1];
+
+  pathToMedia.style.display == 'none' ? pathToMedia.style.display = 'initial' : pathToMedia.style.display = 'none';
 }
