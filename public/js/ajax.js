@@ -185,7 +185,7 @@ function ModifyPost(button) {
   let postContainer = button.closest(".container");
   let postText = postContainer.children().closest("#postText")[0].textContent;
   let btnValidate = $(`<button class="btn btn-primary" onclick="ValidateModification(event, $('#tbxTextModify').val(), $(this).closest('.container').attr('id'))" id="btnValidate">Valider</button>`);
-  let btnCancel = $(`<button class="btn btn-secondary" onclick="CancelModification($(this))">Annuler</button>`);
+  let btnCancel = $(`<button class="btn btn-secondary" onclick="GetPosts()">Annuler</button>`);
   let html = `<form method="post" id="formPost" enctype="multipart/form-data">
                 <table>
                   <tr>
@@ -258,13 +258,14 @@ function ValidateModification(event, text, idPost) {
     event.preventDefault();
   }
 
-  let pathToForm = event.target.parentElement.parentElement.children[0].children[0].children[0].children[0];
-
   let formdata = new FormData();
-
-  let inputImg = pathToForm.children[1].children[1].files;
-  let inputAudio = pathToForm.children[2].children[1].files;
-  let inputVideo = pathToForm.children[3].children[1].files;
+  
+  let pathToForm = event.target.parentElement.parentElement.children['formPost'];
+  
+  let inputImg = pathToForm[1].files;
+  let inputAudio = pathToForm[2].files;
+  let inputVideo = pathToForm[3].files;
+  let mediasSuppressed = GetMediaSuppressed(idPost);
 
   formdata.append("postText", text);
   formdata.append("idPost", idPost);
@@ -289,6 +290,10 @@ function ValidateModification(event, text, idPost) {
     formdata.append("medias[]", file);
   }
 
+  for (let i = 0; i < mediasSuppressed.length; i++) {
+    formdata.append("mediasSuppressed[]", mediasSuppressed[i]);
+  }
+
   $.ajax({
     type: "post",
     url: AJAX_PATH + 'modifyPost.php',
@@ -297,27 +302,11 @@ function ValidateModification(event, text, idPost) {
     data: formdata,
     dataType: "json",
     success: (response) => {
-      console.log(response.Success);
-
       GetPosts();
     }, error: (err) => {
       console.log(err);
     }
   });
-}
-
-/**
- * @author Hoarau Nicolas
- * @date 09.03.2020
- * 
- * @brief Fonction qui annule les modifications faites
- * 
- * @param {*} button 
- * 
- * @version 1.0.0
- */
-function CancelModification(button) {
-  GetPosts();
 }
 
 /**
@@ -364,4 +353,34 @@ function RemoveMedia(event) {
   let pathToMedia = event.target.parentElement.parentElement.firstChild.childElementCount == 1 ? event.target.parentElement.parentElement.firstChild.firstChild : event.target.parentElement.parentElement.firstChild.children[1];
 
   pathToMedia.style.display == 'none' ? pathToMedia.style.display = 'initial' : pathToMedia.style.display = 'none';
+}
+
+/**
+ * @author Hoarau Nicolas
+ * @date 18.03.2020
+ * 
+ * @brief Recupère les medias qui vont être supprimés du post
+ * @param {int} idPost 
+ * 
+ * @returns {array} fichier à supprimer
+ */
+function GetMediaSuppressed(idPost) {
+  let tableMedia = $('#' + idPost)[0].children['tableMedia'].children[0];
+  let mediaSuppressed = new Array();
+
+  // parcour le tableau de medias dans le post
+  for (let i = 0; i < tableMedia.childElementCount; i++) {
+    const tr = tableMedia.children[i].children[0];
+    let media = tr.childElementCount == 1 ? tr.children[0] : tr.children[1]; // récipère le media du tr
+
+    if (media.style.display == 'none') {
+      if (media.childElementCount == 0) {
+        mediaSuppressed.push(media.attributes['src'].value);
+      } else {
+        mediaSuppressed.push(media.children[0].attributes['src'].value);
+      }
+    }
+  }
+
+  return mediaSuppressed;
 }

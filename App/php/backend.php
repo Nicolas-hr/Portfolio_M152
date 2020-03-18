@@ -279,8 +279,12 @@ function DeleteLink(int $idPost, int $idMedia = null): bool
 
       $query->execute();
 
+      EDatabaseController::commit();
+
       return true;
     } catch (Exception $e) {
+      EDatabaseController::rollBack();
+
       throw $e->getMessage();
       return false;
     }
@@ -327,7 +331,7 @@ function DeleteMedia(int $idMedia, string $mediaName): bool
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ UPDATE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
  * @author Hoarau Nicolas
- * @breif Fonction qui modifie le text d'un post choisis
+ * @brief Fonction qui modifie le text d'un post choisis
  *
  * @param string $comment
  * @param integer $idPost
@@ -365,5 +369,36 @@ function UpdateComment(string $comment, int $idPost): bool
 
     throw $e->getMessage();
     return false;
+  }
+}
+
+/**
+ * @author Hoarau Nicolas
+ * @brief fonction qui récupère l'id d'un media via son nom
+ *
+ * @param string $filename
+ * 
+ * @return integer
+ * 
+ * @version 1.0
+ */
+function GetMediaIdByName(string $filename) : int
+{
+  $req = <<<EOT
+  SELECT idMedia FROM media WHERE nomMedia = :filename;
+  EOT;
+
+  try {
+    $query = EDatabaseController::prepare($req);
+
+    $query->bindParam(':filename', $filename, PDO::PARAM_STR);
+
+    $query->execute();
+
+    $queryData = $query->fetch(PDO::FETCH_ASSOC);
+
+    return $queryData['idMedia'];
+  } catch (Exception $e) {
+    throw $e->getMessage();
   }
 }
