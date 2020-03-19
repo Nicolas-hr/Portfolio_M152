@@ -50,10 +50,6 @@ input[type="file"] {
   cursor: pointer;
 }
 
-#imgPosts {
-  width: 600px;
-}
-
 video {
   width: 600px;
 }

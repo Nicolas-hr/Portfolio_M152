@@ -96,6 +96,13 @@ function InsertMedias(int $idPost, string $filename, string $filetype, string $t
     $latsInsertId = EdatabaseController::getInstance()->lastInsertId();
 
     if (move_uploaded_file($tmpName, UPLOAD_PATH . $filename)) {
+      if (explode('/', $filetype)[0] == 'image') {
+        if (ResizeImg($filename, $filetype) == false) {
+          EDatabaseController::rollBack();
+          return false;
+        }
+      }
+
       if (LinkPostAndMedia($idPost, $latsInsertId) == false) {
         EDatabaseController::rollBack();
         return false;
@@ -149,6 +156,53 @@ function LinkPostAndMedia(int $idPost, int $idMedia): bool
   }
 }
 
+/**
+ * @author Hoarau Nicolas
+ * 
+ * @brief Fonction qui redimensionne l'image
+ *
+ * @param string $filename
+ * @param string $type
+ * 
+ * @return boolean
+ * 
+ * @version 1.0
+ */
+function ResizeImg(string $filename, string $type): bool
+{
+  $totalPath = UPLOAD_PATH . $filename;
+  $oldImg = null;
+
+  list($oldWidth, $oldHeight) = getimagesize($totalPath);
+  $newWidth = $oldWidth;
+  $newHeight = $oldHeight;
+
+  if ($oldWidth > MAX_IMG_WIDTH) {
+    $newWidth = MAX_IMG_WIDTH;
+  }
+
+  if ($oldHeight > MAX_IMG_HEIGHT) {
+    $newHeight = MAX_IMG_HEIGHT;
+  }
+
+  switch (explode('/', $type)[1]) {
+    case 'png':
+      $oldImg = imagecreatefrompng($totalPath);
+      break;
+    case 'gif':
+      $oldImg = imagecreatefromgif($totalPath);
+      break;
+    default:
+      $oldImg = imagecreatefromjpeg($totalPath);
+      break;
+  }
+
+  $newImg = imagecreatetruecolor($newWidth, $newHeight);
+
+  if (imagecopyresampled($newImg, $oldImg, 0, 0, 0, 0, $newWidth, $newHeight, $oldWidth, $oldHeight)) {
+    return imagejpeg($newImg, $totalPath, 100);
+  }
+}
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**
